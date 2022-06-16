@@ -35,20 +35,21 @@ public final class ConstPoolEntry implements Cloneable {
   public static final int METHODREF = 10;
   public static final int INTERFACEMETHODREF = 11;
   public static final int NAMEANDTYPE = 12;
-  
+  public static final int INVOKEDYNAMIC = 18;
+
   private byte typecode = -1;
-  
+
   private String stringValue;
   private int intValue;
   private long longValue;
   private float floatValue;
   private double doubleValue;
   private int index1, index2;
-  
+
   public boolean equals(Object o) {
     ConstPoolEntry other;
     try {
-      other = (ConstPoolEntry)o;
+      other = (ConstPoolEntry) o;
     } catch (ClassCastException e) {
       return false;
     }
@@ -58,24 +59,24 @@ public final class ConstPoolEntry implements Cloneable {
     // just looking at stringValue.
     if (stringValue != null && other.stringValue != null)
       return stringValue.equals(other.stringValue);
-    
+
     if (typecode != other.typecode)
       return false;
-    
+
     // This relies on fact that all unused fields are 0.
-    return (other.intValue == intValue && 
-	    other.longValue == longValue &&
-	    other.index1 == index1 &&
-	    other.index2 == index2 &&
-	    other.floatValue == floatValue &&
-	    other.doubleValue == doubleValue);
+    return (other.intValue == intValue &&
+        other.longValue == longValue &&
+        other.index1 == index1 &&
+        other.index2 == index2 &&
+        other.floatValue == floatValue &&
+        other.doubleValue == doubleValue);
   }
 
   public int hashCode() {
     int result = typecode * 97;
     if (stringValue != null)
-      result += stringValue.hashCode()*43;
-    result += intValue*37 + longValue*31 + index1*29 + index2*23;
+      result += stringValue.hashCode() * 43;
+    result += intValue * 37 + longValue * 31 + index1 * 29 + index2 * 23;
     return result;
   }
 
@@ -120,11 +121,11 @@ public final class ConstPoolEntry implements Cloneable {
     else
       return "Unknown typecode " + typecode;
   }
-  
+
   public byte typecode() {
     return typecode;
-  }  
-  
+  }
+
   // used by set methods to erase evidence of any previous set method
   private void clearType() {
     typecode = -1;
@@ -136,9 +137,10 @@ public final class ConstPoolEntry implements Cloneable {
     floatValue = 0;
     doubleValue = 0;
   }
+
   /**
-   * Some const pool entries don't actually exist -- like the ones after a 
-   * LONG or DOUBLE, or entry 0.  These entries are unused.
+   * Some const pool entries don't actually exist -- like the ones after a
+   * LONG or DOUBLE, or entry 0. These entries are unused.
    */
   public ConstPoolEntry setUnused() {
     typecode = -1;
@@ -180,7 +182,7 @@ public final class ConstPoolEntry implements Cloneable {
     longValue = value;
     return this;
   }
-  
+
   public ConstPoolEntry setFloat(float value) {
     clearType();
     typecode = FLOAT;
@@ -216,7 +218,7 @@ public final class ConstPoolEntry implements Cloneable {
     this.index2 = index2;
     return this;
   }
-	
+
   public ConstPoolEntry setMethodRef(int index1, int index2) {
     clearType();
     typecode = METHODREF;
@@ -240,8 +242,7 @@ public final class ConstPoolEntry implements Cloneable {
     this.index2 = index2;
     return this;
   }
-  
-  
+
   /**
    * For UTF and UNICODE entries.
    */
@@ -250,7 +251,7 @@ public final class ConstPoolEntry implements Cloneable {
       return stringValue;
     throw getError("getString()");
   }
-  
+
   /**
    * For STRING entries.
    */
@@ -301,11 +302,16 @@ public final class ConstPoolEntry implements Cloneable {
    * returns an Integer, Long, Float, Double, or String, respectively.
    */
   public Object getPrimitiveTypeValue() {
-    if (UTF == typecode || UNICODE == typecode) return stringValue;
-    if (INT == typecode)                        return new Integer(intValue);
-    if (LONG == typecode)                       return new Long(longValue);
-    if (FLOAT == typecode)                      return new Float(floatValue);
-    if (DOUBLE == typecode)                     return new Double(doubleValue);
+    if (UTF == typecode || UNICODE == typecode)
+      return stringValue;
+    if (INT == typecode)
+      return new Integer(intValue);
+    if (LONG == typecode)
+      return new Long(longValue);
+    if (FLOAT == typecode)
+      return new Float(floatValue);
+    if (DOUBLE == typecode)
+      return new Double(doubleValue);
     throw getError("getPrimitiveTypeValue()");
   }
 
@@ -322,8 +328,8 @@ public final class ConstPoolEntry implements Cloneable {
    * For FIELDREF, METHODREF, or INTERFACEMETHODREF entries.
    */
   public int getClassIndex() {
-    if (FIELDREF == typecode || METHODREF == typecode 
-	|| INTERFACEMETHODREF == typecode)
+    if (FIELDREF == typecode || METHODREF == typecode
+        || INTERFACEMETHODREF == typecode)
       return index1;
     throw getError("getClassIndex()");
   }
@@ -333,7 +339,7 @@ public final class ConstPoolEntry implements Cloneable {
    */
   public int getNameAndTypeIndex() {
     if (FIELDREF == typecode || METHODREF == typecode
-	|| INTERFACEMETHODREF == typecode)
+        || INTERFACEMETHODREF == typecode)
       return index2;
     throw getError("getNameAndTypeIndex()");
   }
@@ -355,62 +361,65 @@ public final class ConstPoolEntry implements Cloneable {
       return index2;
     throw getError("getTypeIndex()");
   }
-  
-  // utility method -- called when getXXXX() is 
+
+  // utility method -- called when getXXXX() is
   // called for inappropriate typecode
   private ConstPoolEntryError getError(String method) {
-    return new ConstPoolEntryError(method + 
-	   " called on ConstPoolEntry with typecode " + 
-	   typecode());
+    return new ConstPoolEntryError(method +
+        " called on ConstPoolEntry with typecode " +
+        typecode());
   }
-  
-  public void read(DataInput in, ConstPoolEntry entry) 
-    throws IOException {
+
+  public void read(DataInput in, ConstPoolEntry entry)
+      throws IOException {
     byte tag = in.readByte();
     switch (tag) {
       case UTF:
-	entry.setUTF(in.readUTF());
-	break;
+        entry.setUTF(in.readUTF());
+        break;
       case UNICODE:
-	int length = in.readShort();
-	char[] chars = new char[length];
-	for (int i = 0; i < length; i++)
-	  chars[i] = in.readChar();
-	String str = new String(chars);
-	entry.setUnicode(str);
-	break;
+        int length = in.readShort();
+        char[] chars = new char[length];
+        for (int i = 0; i < length; i++)
+          chars[i] = in.readChar();
+        String str = new String(chars);
+        entry.setUnicode(str);
+        break;
       case INT:
-	entry.setInt(in.readInt());
-	break;
+        entry.setInt(in.readInt());
+        break;
       case FLOAT:
-	entry.setFloat(in.readFloat());
-	break;
+        entry.setFloat(in.readFloat());
+        break;
       case LONG:
-	entry.setLong(in.readLong());
-	break;
+        entry.setLong(in.readLong());
+        break;
       case DOUBLE:
-	entry.setDouble(in.readDouble());
-	break;
+        entry.setDouble(in.readDouble());
+        break;
       case CLASS:
-	entry.setClass(in.readShort());
-	break;
+        entry.setClass(in.readShort());
+        break;
       case STRING:
-	entry.setString(in.readShort());
-	break;
+        entry.setString(in.readShort());
+        break;
       case FIELDREF:
-	entry.setFieldRef(in.readShort(), in.readShort());
-	break;
+        entry.setFieldRef(in.readShort(), in.readShort());
+        break;
       case METHODREF:
-	entry.setMethodRef(in.readShort(), in.readShort());
-	break;
+        entry.setMethodRef(in.readShort(), in.readShort());
+        break;
       case INTERFACEMETHODREF:
-	entry.setInterfaceMethodRef(in.readShort(), in.readShort());
-	break;
+        entry.setInterfaceMethodRef(in.readShort(), in.readShort());
+        break;
       case NAMEANDTYPE:
-	entry.setNameAndType(in.readShort(), in.readShort());
-	break;
+        entry.setNameAndType(in.readShort(), in.readShort());
+        break;
+      case INVOKEDYNAMIC:
+        entry.setNameAndType(in.readShort(), in.readShort());
+        break;
       default:
-	throw new IOException("Unknown constant pool tag: " + tag);
+        throw new IOException("Unknown constant pool tag: " + tag);
     }
   }
 }
