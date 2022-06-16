@@ -1,3 +1,4 @@
 .vscode/
 *.d
 *.class
+tool/NanoVMTool.jar
