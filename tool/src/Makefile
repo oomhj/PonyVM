@@ -9,7 +9,7 @@ all: ../$(APP).jar
 
 CLASSPATH = ../../java/examples
 NATIVEPATH = ../../java/native
-
+# Uploader.java
 JAVAFILES = AccessFlags.java CodeInfo.java ConstPoolEntry.java FieldInfo.java \
             MethodInfo.java AttributeInfo.java CodeTranslator.java \
 	    ConstPoolEntryError.java InnerClassInfo.java NanoVMTool.java \
@@ -17,7 +17,7 @@ JAVAFILES = AccessFlags.java CodeInfo.java ConstPoolEntry.java FieldInfo.java \
 	    LineNumberInfo.java NativeMapper.java ClassInfo.java \
 	    Config.java Debug.java LocalVariableInfo.java UVMWriter.java \
 	    ClassLoader.java ConstPool.java ExceptionInfo.java \
-	    MethodIdTable.java Uploader.java NVMComm2.java
+	    MethodIdTable.java  NVMComm2.java
 
 # compile target code
 $(CLASSPATH)/%.class: $(CLASSPATH)/%.java
