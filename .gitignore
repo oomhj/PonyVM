@@ -2,3 +2,4 @@
 *.d
 *.class
 tool/NanoVMTool.jar
+.DS_Store
