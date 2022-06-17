@@ -26,7 +26,7 @@ include ../../src/unix/Makefile
 CFLAGS += -std=gnu99 -Wall -Werror -pedantic-errors -Wundef -Wno-long-long
 
 # host compiler and linker flags
-CFLAGS += -Os -DUNIX -I. -DVERSION="\"$(VERSION)\""
+CFLAGS += -g -Os -DUNIX -I. -DVERSION="\"$(VERSION)\""
 CLDFLAGS += -lm
 
 nvmdefault.h: Makefile
