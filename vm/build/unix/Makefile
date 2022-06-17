@@ -78,6 +78,6 @@ $(PROJ): $(OBJS)
 	@rm $(PROJ).log java.log
 
 clean:
-	rm -f *.d *.o *~ nvmdefault.h NanoVM
+	$(RM) *.d *.o *~ nvmdefault.h NanoVM
 
 include $(OBJS:.o=.d)
