@@ -11,6 +11,7 @@ DEFAULT_FILE = FormatterTest
 #DEFAULT_FILE = Switch
 #DEFAULT_FILE = MathTest
 #DEFAULT_FILE = Inheritance
+CC = clang
 
 CFLAGS += -DDEBUG
 
@@ -77,6 +78,6 @@ $(PROJ): $(OBJS)
 	@rm $(PROJ).log java.log
 
 clean:
-	rm -f *.d *.o *~ nvmdefault.h
+	rm -f *.d *.o *~ nvmdefault.h NanoVM
 
 include $(OBJS:.o=.d)
